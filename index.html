@@ -186,6 +186,7 @@ const send=a=>{a.n=Date.now()+Math.random();db.ref('acts/'+code+'/'+uid).set(a)}
 
 /* ===== Room ===== */
 async function mkRoom(){
+ if(!uid)return err('Belum tersambung ke Firebase');
  name=$('#nm').value.trim();if(!name)return err('Isi nama dulu');
  localStorage.nm=name;
  const A='ABCDEFGHJKMNPQRSTUVWXYZ23456789';let c,ex=true;
@@ -194,6 +195,7 @@ async function mkRoom(){
  enter(c);
 }
 async function joinRoom(){
+ if(!uid)return err('Belum tersambung ke Firebase');
  name=$('#nm').value.trim();if(!name)return err('Isi nama dulu');
  localStorage.nm=name;
  const c=$('#jc').value.trim().toUpperCase(),r=(await db.ref('rooms/'+c).once('value')).val();
@@ -265,8 +267,9 @@ $('#pk').onclick=e=>{
  if(b&&pick)send({t:'play',c:pick,k:b.dataset.k});pick=null;
 };
 
+show('h');err('Menyambung ke Firebase…');
 firebase.auth().signInAnonymously().then(r=>{
- uid=r.user.uid;$('#nm').value=localStorage.nm||'';show('h');
+ err('');uid=r.user.uid;$('#nm').value=localStorage.nm||'';show('h');
  const c=localStorage.rm;if(!c)return;
  db.ref('rooms/'+c).once('value').then(sn=>{
   const v=sn.val();
